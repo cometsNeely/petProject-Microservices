@@ -1,0 +1,104 @@
+#  cd into the demoProject folder
+#  composer install/update --ignore-platform-reqs && php artisan key:generate
+#  run docker-compose up -d --build
+#  run docker-compose exec app bash php artisan migrate:fresh
+#  npm install
+#  npm run build
+#  npm run dev
+
+version: '3'
+
+networks: 
+  mynetwork:
+
+services:
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./app-desktop/:/var/www
+      - ./app-desktop/_docker/nginx/conf.d:/etc/nginx/conf.d
+    ports:
+      - 80:80
+    depends_on:
+      - app-desktop
+    container_name: nginx
+    networks: 
+      - mynetwork
+
+  app-desktop:
+    build:
+      context: .
+      dockerfile: ./app-desktop/_docker/app/Dockerfile
+    volumes:
+      - ./app-desktop/:/var/www
+    ports:
+      - 5173:5173 # Vite port
+    depends_on:
+      - db
+    container_name: app-desktop
+    networks: 
+      - mynetwork
+
+  app-simple-admin-panel:
+    build:
+      context: .
+      dockerfile: ./app-simple-admin-panel/_docker/app/Dockerfile
+    restart: always
+    volumes:
+      - ./app-simple-admin-panel/:/usr/src/index
+    ports:
+      - 3000:3000 # Node port
+    depends_on:
+      - app-desktop
+    container_name: app-simple-admin-panel
+    networks: 
+      - mynetwork
+
+  supervisor:
+    build:
+      context: .
+      dockerfile: ./app-desktop/_docker/app/supervisor/Dockerfile
+    volumes:
+      - ./app-desktop/:/var/www
+    depends_on:
+      - app-desktop
+    container_name: supervisor
+    # command: supervisord -c /etc/supervisor/supervisord.conf
+    networks: 
+      - mynetwork
+
+  db:
+    image: mysql:8.0
+    restart: always
+    volumes:
+      - ./app-desktop/tmp/db:/var/lib/mysql
+    environment:
+        MYSQL_DATABASE: projectFilms
+        MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+    container_name: db
+    networks: 
+      - mynetwork
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    container_name: redis
+    networks: 
+      - mynetwork
+
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    container_name: rabbitmq
+    networks: 
+      - mynetwork
+
+# 1.попробовать реалиовать с джэ эс во вью внутри проекта или извне
+# 2.попробовтаь реализовать с нод джэ эс
