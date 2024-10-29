@@ -17,6 +17,3 @@ WORKDIR /usr/src/index
 
 # Command to start the application
 CMD ["node", "index.js"]
-
-# express это тот же node (поверх), только с маршрутизацией
-# vue (ssr) + express тоже будет обсулживаться как серверное приложение

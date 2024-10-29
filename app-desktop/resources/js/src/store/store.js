@@ -12,6 +12,10 @@ const store = createStore({
 			message: '',
             errors: null,
             shows: [],
+            welcome_abilities: ({
+                message: '',
+                value: false
+            })
 		};
 	},
     getters: {
@@ -20,9 +24,18 @@ const store = createStore({
         }*/
     },
     mutations: {
+        defaultDataParamsWelcomeAbilities(state, newParams) {
+
+            state.welcome_abilities.message = newParams.response_message
+            state.welcome_abilities.value = newParams.value_abilities
+
+        },
+
         defaultDataParamsMsgErrs(state, newParamMsg, newParamErrs) {
+
             state.message = newParamMsg
             state.errors = newParamErrs
+            
         },
 
         addDataToShows(state, newParams) {

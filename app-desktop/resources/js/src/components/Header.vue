@@ -9,6 +9,19 @@
                     Главная
                   </router-link>
               </li>
+              <li v-if="store.state.welcome_abilities.value === true">
+              <router-link
+                    aria-current="page"
+                    class="nav-link-additional"
+                    :to="{
+                    name: 'Additional',
+                    params: {
+                       //parameter: ''
+                    }
+                    }">
+                Дополнительные возможности!
+                </router-link>
+              </li>
               <li>
               <router-link
                     aria-current="page"
@@ -112,12 +125,13 @@
                 Детективы
                 </router-link>
               </li>
-              
           </ul>
       </header>
   </template>
 
-<script>
+<script setup>
+import { useStore } from 'vuex'
+const store = useStore()
 </script>
 
 <style scoped>
@@ -128,5 +142,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+.nav-link-additional {
+  color:green;
 }
 </style>

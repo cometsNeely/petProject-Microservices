@@ -2,6 +2,7 @@ import Home from '@/pages/Home.vue';
 import Show from '@/pages/Show.vue';
 import Login from '@/pages/Login.vue';
 import Register from '@/pages/Register.vue';
+import Additional from '@/pages/Additional.vue';
 
 const routes = [
 	{
@@ -15,6 +16,11 @@ const routes = [
 	{
 		path: '/register',
 		component: Register,
+	},
+	{
+		path: '/additional_abilities_content',
+		name: 'Additional',
+		component: Additional,
 	},
 	{
 		path: '/thriller',

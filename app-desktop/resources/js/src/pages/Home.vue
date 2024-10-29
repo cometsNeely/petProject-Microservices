@@ -5,7 +5,6 @@ import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
 const store = useStore()
-
 const router = useRouter()
 
 const logout = async () => {
@@ -32,7 +31,12 @@ const logout = async () => {
 const subscribe = async () => {
 
 	try {
-    await axios.post('/subscribe', { payed: true }).then(res => {})
+    await axios.post('/subscribe', { payed: 'true' }).then(res => {
+
+		console.log(res.data)
+		store.commit('defaultDataParamsWelcomeAbilities', res.data)
+
+	})
   	} catch (error) {
     	console.log('Error:', error);
   	}
@@ -47,7 +51,8 @@ const subscribe = async () => {
         <button class="btn btn-primary btn-md" Style="width: 100px;" @click="router.push({ path: '/login' })">Login</button>&nbsp;
 		<button class="btn btn-dark btn-md" Style="width: 100px;" @click="router.push({ path: '/register' })">Register</button>&nbsp;
 		<button class="btn btn-danger btn-md" Style="width: 100px;" @click="logout">Logout</button>&nbsp;
-		<button class="btn btn-warning btn-md" Style="width: 300px;" @click="subscribe">Subscribe</button>
+		<button class="btn btn-warning btn-md" Style="width: 300px;" @click="subscribe">Subscribe</button><br>
+		{{  store.state.welcome_abilities  }}
 	</div>
 	</div>
 	<!--<h1>Counter: {{ counter }}</h1>

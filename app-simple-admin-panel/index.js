@@ -1,68 +1,77 @@
 var amqp = require('amqplib/callback_api');
 
-let message = '';
-
 amqp.connect('amqp://rabbitmq', function(error0, connection) {
 
-    if (error0) {
-
-        throw error0;
-
-    }
-
-    connection.createChannel(function(error1, channel) {
-        if (error1) {
-
-            throw error1;
-
+        if (error0) {
+            throw error0;
         }
 
-        /* var exchange = 'admin';
+        connection.createChannel(function(error1, channel) {
 
-        channel.assertExchange(exchange, 'direct', {
+            if (error1) {
 
-            durable: true
+                throw error1;
 
-        });
+            }
 
-        var queue = 'admin';
+            var exchange = 'admin';
 
-        channel.assertQueue(queue, {
+            channel.assertExchange(exchange, 'direct', {
 
-            durable: true
+                durable: true
 
-        }); */
+            });
 
-        console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", 'admin');
+            var queue = 'rpc_admin';
 
-        channel.bindQueue('admin', 'admin', 'is_admin');
+            channel.assertQueue(queue, {
 
-        channel.consume(queue, function(msg) {
+                durable: true
 
-            message = msg.content;
-            console.log(" [x] Received %s", msg.content);
+            }); 
 
-        }, {
+            channel.prefetch(1); 
+            channel.bindQueue('rpc_admin', 'admin', 'is_admin');
 
-            noAck: true
 
-        });
-    });
+            console.log(' [x] Awaiting RPC requests');
 
+            channel.consume('rpc_admin', function reply(msg) {
+
+                console.log(msg.content);
+                console.log(" [x] Received %s", msg.content);
+                
+                var result = 'Open additional responsibilies for this user!';
+          
+                channel.sendToQueue(msg.properties.replyTo,
+                  Buffer.from(result), {
+                    correlationId: msg.properties.correlationId
+                  });
+          
+                channel.ack(msg);
+    
+            });
+            
+    })
 });
- 
-/* const express = require('express')
-const app = express()
+
+/* const express = require('express');
+const path = require('path');
+
+const app = express();
+
+app.engine('html', require('ejs').renderFile);
 
 app.get('/', (req, res) => {
+    const books = [
+        { title: "The Great Gatsby", author: "F. Scott Fitzgerald" },
+        { title: "To Kill a Mockingbird", author: "Harper Lee" },
+        { title: "1984", author: "George Orwell" },
+    ];
+    res.render(path.join(__dirname, 'index.html'), { books });
+});
 
-  //res.send(message)
-  console.log(message)
-
-})
-
-app.listen(3000, () => {
-
-  console.log('Listening on port 3000')
-
-}) */
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+}); */

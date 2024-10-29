@@ -71,26 +71,4 @@ class AuthController extends Controller
 
     }
 
-    public function subscribe(Request $request)
-    {
-
-        $connection = new AMQPStreamConnection('rabbitmq', 5672, 'guest', 'guest');
-        $channel = $connection->channel();
-
-        $channel->exchange_declare('admin', 'direct', false, true, false);
-        $channel->queue_declare('admin', false, true, false, false);
-        $channel->queue_bind('admin', 'admin');
-
-        $msg = new AMQPMessage('Message for something user.');
-
-        $channel->basic_publish($request->payed, 'admin', 'is_admin');
-        $channel->basic_publish($msg, 'admin', 'is_admin2');
-
-            echo " [x] Sent 'Hello World!'\n";
-
-        //$channel->close();
-        //$connection->close();
-
-    }
-
 }
